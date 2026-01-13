@@ -156,17 +156,6 @@
     },
     {
         "id": 6,
-        "title": "CHAT APP",
-        "subtitle": "FLUTTER FIREBASE • DEPLOYED",
-        "location": "GLOBAL",
-        "challenge": "REAL-TIME COMM",
-        "service": "APP DEVELOPMENT",
-        "industry": "SOCIAL",
-        "year": "2024",
-        "color": "#2196f3"
-    },
-    {
-        "id": 7,
         "title": "TRACZI",
         "subtitle": "GPS TRACKING • FLEET MANAGEMENT",
         "location": "GLOBAL",
@@ -196,7 +185,7 @@
         ]
     },
     {
-        "id": 8,
+        "id": 7,
         "title": "DISHA MARG",
         "subtitle": "DEPLOYED",
         "location": "INDIA",
@@ -229,7 +218,7 @@
         "link": "https://dishamarg.gauravpawar.in"
     },
     {
-        "id": 9,
+        "id": 8,
         "title": "ECOMMERCE BACKEND",
         "subtitle": "DEPLOYED",
         "location": "GLOBAL",
@@ -261,7 +250,7 @@
         "link": "https://ecommerceapi-web.onrender.com/api-docs/#/"
     },
     {
-        "id": 10,
+        "id": 9,
         "title": "GO GREEN BIN GO BACKEND",
         "subtitle": "DEPLOYED",
         "location": "INDIA",
