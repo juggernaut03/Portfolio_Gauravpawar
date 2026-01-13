@@ -1,0 +1,62 @@
+@import "tailwindcss";
+
+/* Performance optimizations for smooth animations */
+* {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Reset html and body heights */
+html,
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+    height: auto;
+    overflow-x: hidden;
+}
+
+#root {
+    min-height: 100%;
+    height: auto;
+}
+
+/* GPU acceleration for transforms */
+.will-change-transform {
+    will-change: transform;
+}
+
+/* Smooth scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* 3D perspective utilities */
+.perspective-1000 {
+    perspective: 1000px;
+    transform-style: preserve-3d;
+}
+
+.perspective-2000 {
+    perspective: 2000px;
+    transform-style: preserve-3d;
+}
+
+/* Modal styling - Critical fix for mobile */
+#work-modal-content {
+    -webkit-overflow-scrolling: touch;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    touch-action: pan-y;
+}
+
+/* Body lock when modal is open */
+body.modal-open {
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+}
