@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Mail, Phone, Calendar, User, Users, MessageSquare, DollarSign, Search, Filter, Download, ArrowUpRight, Trash2 } from 'lucide-react';
+import { Mail, Phone, Calendar, User, Users, MessageSquare, DollarSign, Search, Filter, Download, ArrowUpRight, Trash2, CheckCircle2 } from 'lucide-react';
 
 const LeadsPage = () => {
     const [leads, setLeads] = useState([]);
@@ -58,6 +58,48 @@ const LeadsPage = () => {
         }
     };
 
+    const handleToggleStatus = async (id, currentStatus) => {
+        const newStatus = currentStatus === 'converted' ? 'new' : 'converted';
+        try {
+            const token = localStorage.getItem('adminToken');
+            const response = await fetch(`http://localhost:5001/api/contact/${id}/status`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ status: newStatus })
+            });
+
+            if (response.ok) {
+                const updatedLead = await response.json();
+                setLeads(leads.map(lead => lead._id === id ? updatedLead : lead));
+            } else {
+                alert('Failed to update status');
+            }
+        } catch (err) {
+            console.error('Status update error:', err);
+            alert('Error updating status');
+        }
+    };
+
+    // Calculate Dynamic Stats
+    const totalLeads = leads.length;
+    const currentMonthLeads = leads.filter(lead => {
+        const leadDate = new Date(lead.createdAt);
+        const now = new Date();
+        return leadDate.getMonth() === now.getMonth() && leadDate.getFullYear() === now.getFullYear();
+    }).length;
+
+    const convertedRevenue = leads
+        .filter(lead => lead.status === 'converted')
+        .reduce((sum, lead) => {
+            // Extract numbers from budget string like "5K-10K" -> use middle value or similar
+            // Simple approach: try to find the first number
+            const match = lead.budget.match(/(\d+)/);
+            return sum + (match ? parseInt(match[0]) * 1000 : 0);
+        }, 0);
+
     const filteredLeads = leads.filter(lead =>
         lead.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         lead.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -69,9 +111,9 @@ const LeadsPage = () => {
             {/* Stats Header */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {[
-                    { label: 'Total Leads', value: leads.length, icon: <Users className="w-5 h-5" />, color: 'blue' },
-                    { label: 'This Month', value: leads.filter(l => new Date(l.createdAt).getMonth() === new Date().getMonth()).length, icon: <Calendar className="w-5 h-5" />, color: 'purple' },
-                    { label: 'Avg. Budget', value: '$' + (leads.length ? (leads.length * 1000).toLocaleString() : '0'), icon: <DollarSign className="w-5 h-5" />, color: 'green' }
+                    { label: 'Total Leads', value: totalLeads, icon: <Users className="w-5 h-5" />, color: 'blue' },
+                    { label: 'This Month', value: currentMonthLeads, icon: <Calendar className="w-5 h-5" />, color: 'purple' },
+                    { label: 'Converted Revenue', value: '$' + convertedRevenue.toLocaleString(), icon: <DollarSign className="w-5 h-5" />, color: 'emerald' }
                 ].map((stat, i) => (
                     <motion.div
                         key={i}
@@ -143,12 +185,22 @@ const LeadsPage = () => {
                                     <tr key={lead._id} className="group hover:bg-white/[0.03] transition-colors">
                                         <td className="px-8 py-6">
                                             <div className="flex items-center gap-4">
-                                                <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400 border border-blue-500/20 group-hover:scale-110 transition-transform">
+                                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center border transition-all duration-500 ${lead.status === 'converted'
+                                                        ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.1)]'
+                                                        : 'bg-white/5 border-white/10 text-white/40 group-hover:scale-110 transition-transform'
+                                                    }`}>
                                                     <User className="w-5 h-5" />
                                                 </div>
                                                 <div>
-                                                    <p className="font-bold text-sm tracking-tight">{lead.name}</p>
-                                                    <div className="flex items-center gap-3 mt-1 text-white/30 text-[10px] font-mono">
+                                                    <div className="flex items-center gap-2">
+                                                        <p className="font-bold text-sm tracking-tight">{lead.name}</p>
+                                                        {lead.status === 'converted' && (
+                                                            <span className="flex items-center gap-1 text-[8px] font-black text-emerald-400 uppercase tracking-tighter bg-emerald-400/10 px-1.5 py-0.5 rounded-md border border-emerald-400/20">
+                                                                Converted
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    <div className="flex items-center gap-3 mt-1 text-white/30 text-[10px] font-mono font-medium">
                                                         <span className="flex items-center gap-1"><Mail className="w-3 h-3" /> {lead.email}</span>
                                                         <span className="flex items-center gap-1"><Phone className="w-3 h-3" /> {lead.phone}</span>
                                                     </div>
@@ -175,6 +227,16 @@ const LeadsPage = () => {
                                         </td>
                                         <td className="px-8 py-6 text-right">
                                             <div className="flex items-center justify-end gap-2">
+                                                <button
+                                                    onClick={() => handleToggleStatus(lead._id, lead.status)}
+                                                    className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all border ${lead.status === 'converted'
+                                                        ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 hover:bg-emerald-500 hover:text-white shadow-lg shadow-emerald-500/5'
+                                                        : 'bg-white/5 text-white/30 border-white/10 hover:bg-white hover:text-black group-hover:shadow-[0_0_15px_rgba(255,255,255,0.2)]'
+                                                        }`}
+                                                    title={lead.status === 'converted' ? 'Mark as New' : 'Mark as Converted'}
+                                                >
+                                                    <CheckCircle2 className="w-4 h-4" />
+                                                </button>
                                                 <button className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-white text-white hover:text-black transition-all border border-white/10 group-hover:shadow-[0_0_15px_rgba(255,255,255,0.2)]">
                                                     <ArrowUpRight className="w-4 h-4" />
                                                 </button>
