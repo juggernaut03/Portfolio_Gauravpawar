@@ -16,7 +16,7 @@ const LeadsPage = () => {
         setIsLoading(true);
         try {
             const token = localStorage.getItem('adminToken');
-            const response = await fetch('http://localhost:5001/api/contact', {
+            const response = await fetch('https://portfolio-backend-c4o2.onrender.com/api/contact', {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -40,7 +40,7 @@ const LeadsPage = () => {
 
         try {
             const token = localStorage.getItem('adminToken');
-            const response = await fetch(`http://localhost:5001/api/contact/${id}`, {
+            const response = await fetch(`https://portfolio-backend-c4o2.onrender.com/api/contact/${id}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${token}`

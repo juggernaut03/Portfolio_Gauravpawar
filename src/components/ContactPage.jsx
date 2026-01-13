@@ -50,7 +50,7 @@ const ContactPage = () => {
         setErrorMessage('');
 
         try {
-            const response = await fetch('http://localhost:5001/api/contact', {
+            const response = await fetch('https://portfolio-backend-c4o2.onrender.com/api/contact', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

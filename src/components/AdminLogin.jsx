@@ -22,7 +22,7 @@ const AdminLogin = () => {
         setError('');
 
         try {
-            const response = await fetch('http://localhost:5001/api/admin/login', {
+            const response = await fetch('https://portfolio-backend-c4o2.onrender.com/api/admin/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(credentials)
@@ -114,8 +114,8 @@ const AdminLogin = () => {
                             type="submit"
                             disabled={isLoading}
                             className={`w-full py-4 rounded-xl font-bold tracking-widest text-sm transition-all flex items-center justify-center gap-2 ${isLoading
-                                    ? 'bg-white/20 text-white/50 cursor-not-allowed'
-                                    : 'bg-white text-black hover:bg-white/90 active:scale-[0.98]'
+                                ? 'bg-white/20 text-white/50 cursor-not-allowed'
+                                : 'bg-white text-black hover:bg-white/90 active:scale-[0.98]'
                                 }`}
                         >
                             {isLoading ? (
