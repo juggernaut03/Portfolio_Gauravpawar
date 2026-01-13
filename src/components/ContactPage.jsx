@@ -10,6 +10,9 @@ const ContactPage = () => {
         email: '',
         message: ''
     });
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submitStatus, setSubmitStatus] = useState(null); // 'success' | 'error'
+    const [errorMessage, setErrorMessage] = useState('');
 
     const customEase = [0.16, 1, 0.3, 1];
     const budgetOptions = ['1K-5K', '5K-10K', '10K-20K', 'MORE'];
@@ -33,9 +36,53 @@ const ContactPage = () => {
         });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('Form submitted:', { ...formData, budget: selectedBudget });
+
+        if (!selectedBudget) {
+            setSubmitStatus('error');
+            setErrorMessage('Please select a budget');
+            return;
+        }
+
+        setIsSubmitting(true);
+        setSubmitStatus(null);
+        setErrorMessage('');
+
+        try {
+            const response = await fetch('http://localhost:5001/api/contact', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    ...formData,
+                    budget: selectedBudget
+                }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                setSubmitStatus('success');
+                setFormData({
+                    name: '',
+                    phone: '',
+                    email: '',
+                    message: ''
+                });
+                setSelectedBudget(null);
+            } else {
+                setSubmitStatus('error');
+                setErrorMessage(data.error || 'Something went wrong. Please try again.');
+            }
+        } catch (error) {
+            console.error('Submission error:', error);
+            setSubmitStatus('error');
+            setErrorMessage('Could not connect to the server. Please check if the backend is running.');
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -153,15 +200,36 @@ const ContactPage = () => {
                         <div className="text-center py-12">
                             <motion.button
                                 type="submit"
+                                disabled={isSubmitting}
                                 whileHover={{ scale: 1.02 }}
                                 whileTap={{ scale: 0.98 }}
-                                className="inline-flex items-center gap-2 text-sm font-bold tracking-wider border-b-2 border-black pb-1 hover:opacity-60 transition-opacity"
+                                className={`inline-flex items-center gap-2 text-sm font-bold tracking-wider border-b-2 border-black pb-1 transition-all ${isSubmitting ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-60'}`}
                             >
-                                DISCUSS THE PROJECT
+                                {isSubmitting ? 'SENDING...' : 'DISCUSS THE PROJECT'}
                                 <svg className="w-4 h-4 -rotate-45" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                                 </svg>
                             </motion.button>
+
+                            {/* Status Messages */}
+                            {submitStatus === 'success' && (
+                                <motion.p
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="mt-4 text-green-600 font-mono text-sm"
+                                >
+                                    MESSAGE SENT SUCCESSFULLY! I'LL GET BACK TO YOU SOON.
+                                </motion.p>
+                            )}
+                            {submitStatus === 'error' && (
+                                <motion.p
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="mt-4 text-red-600 font-mono text-sm uppercase"
+                                >
+                                    {errorMessage}
+                                </motion.p>
+                            )}
                         </div>
                     </motion.form>
                 </div>
@@ -207,9 +275,9 @@ const ContactPage = () => {
                             </div>
 
                             {/* Social Links */}
-                            <div className="flex gap-6 justify-end">
+                            <div className="flex gap-6 justify-end flex-wrap">
                                 <a
-                                    href="https://linkedin.com/in/gauravpawar"
+                                    href="https://www.linkedin.com/in/gauravvpawar/"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="text-sm font-bold border-b border-black pb-0.5 hover:opacity-60 transition-opacity inline-flex items-center gap-1"
@@ -220,7 +288,18 @@ const ContactPage = () => {
                                     </svg>
                                 </a>
                                 <a
-                                    href="https://github.com/gauravpawar"
+                                    href="https://x.com/Gauravvpawar"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-sm font-bold border-b border-black pb-0.5 hover:opacity-60 transition-opacity inline-flex items-center gap-1"
+                                >
+                                    TWITTER
+                                    <svg className="w-3 h-3 -rotate-45" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                                    </svg>
+                                </a>
+                                <a
+                                    href="https://github.com/juggernaut03"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="text-sm font-bold border-b border-black pb-0.5 hover:opacity-60 transition-opacity inline-flex items-center gap-1"
@@ -231,12 +310,10 @@ const ContactPage = () => {
                                     </svg>
                                 </a>
                                 <a
-                                    href="https://gauravpawar.in"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
+                                    href="mailto:gauravpawar904@gmail.com"
                                     className="text-sm font-bold border-b border-black pb-0.5 hover:opacity-60 transition-opacity inline-flex items-center gap-1"
                                 >
-                                    PORTFOLIO
+                                    EMAIL
                                     <svg className="w-3 h-3 -rotate-45" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                                     </svg>
@@ -250,38 +327,6 @@ const ContactPage = () => {
                                 <p>India</p>
                             </div>
                         </motion.div>
-                    </div>
-                </div>
-            </section>
-
-            {/* Portfolio Links Section */}
-            <section className="py-8 px-6 md:px-12">
-                <div className="max-w-7xl mx-auto">
-                    <div className="flex flex-wrap justify-between items-center gap-4">
-                        <a
-                            href="https://dribbble.com"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-xs font-mono hover:opacity-60 transition-opacity"
-                        >
-                            [ DRIBBBLE ]
-                        </a>
-                        <a
-                            href="https://behance.net"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-xs font-mono hover:opacity-60 transition-opacity"
-                        >
-                            [ BEHANCE ]
-                        </a>
-                        <a
-                            href="https://linkedin.com"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-xs font-mono hover:opacity-60 transition-opacity"
-                        >
-                            [ LINKEDIN ]
-                        </a>
                     </div>
                 </div>
             </section>

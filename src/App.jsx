@@ -1,13 +1,17 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import Hero from './components/Hero';
 import Navigation from './components/Navigation';
 import AboutPage from './components/AboutPage';
 import WorksPage from './components/WorksPage';
 import ServicesPage from './components/ServicesPage';
 import ContactPage from './components/ContactPage';
+import AdminLogin from './components/AdminLogin';
+import AdminDashboard from './components/AdminDashboard';
+import LeadsPage from './components/LeadsPage';
 
-function App() {
+const Portfolio = () => {
   const [currentPage, setCurrentPage] = useState('home');
   const [isTransitioning, setIsTransitioning] = useState(false);
 
@@ -23,10 +27,7 @@ function App() {
 
   return (
     <>
-      {/* Navigation - Always visible */}
       <Navigation currentPage={currentPage} onNavigate={handleNavigation} />
-
-      {/* Page Content with Transitions */}
       <AnimatePresence mode="wait">
         {currentPage === 'home' && (
           <motion.div
@@ -39,7 +40,6 @@ function App() {
             <Hero onNavigate={handleNavigation} />
           </motion.div>
         )}
-
         {currentPage === 'about' && (
           <motion.div
             key="about"
@@ -51,7 +51,6 @@ function App() {
             <AboutPage />
           </motion.div>
         )}
-
         {currentPage === 'works' && (
           <motion.div
             key="works"
@@ -63,7 +62,6 @@ function App() {
             <WorksPage />
           </motion.div>
         )}
-
         {currentPage === 'services' && (
           <motion.div
             key="services"
@@ -75,20 +73,6 @@ function App() {
             <ServicesPage onNavigate={handleNavigation} />
           </motion.div>
         )}
-
-        {currentPage === 'connect' && (
-          <motion.div
-            key="connect"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.8, ease: customEase }}
-            className="bg-black text-white flex items-center justify-center pt-32 pb-32"
-          >
-            <h1 className="text-6xl font-black">CONNECT PAGE</h1>
-          </motion.div>
-        )}
-
         {currentPage === 'contact' && (
           <motion.div
             key="contact"
@@ -102,7 +86,32 @@ function App() {
         )}
       </AnimatePresence>
     </>
-  )
+  );
+};
+
+// Protected Route Component
+const ProtectedRoute = ({ children }) => {
+  const token = localStorage.getItem('adminToken');
+  if (!token) return <Navigate to="/admin/auth" replace />;
+  return children;
+};
+
+function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<Portfolio />} />
+      <Route path="/admin/auth" element={<AdminLogin />} />
+      <Route path="/admin" element={
+        <ProtectedRoute>
+          <AdminDashboard />
+        </ProtectedRoute>
+      }>
+        <Route index element={<Navigate to="/admin/leads" replace />} />
+        <Route path="leads" element={<LeadsPage />} />
+      </Route>
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  );
 }
 
-export default App
+export default App;
