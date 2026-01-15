@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+# Disallow admin pages
+User-agent: *
+Disallow: /admin/
+Disallow: /admin/auth
+
+# Sitemap
+Sitemap: https://www.gauravpawar.in/sitemap.xml
