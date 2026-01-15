@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
+import { API_ENDPOINTS } from '../constants/config';
 
 const ContactPage = () => {
     const [selectedBudget, setSelectedBudget] = useState(null);
@@ -50,7 +51,7 @@ const ContactPage = () => {
         setErrorMessage('');
 
         try {
-            const response = await fetch('https://portfolio-backend-c4o2.onrender.com/api/contact', {
+            const response = await fetch(API_ENDPOINTS.CONTACT, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

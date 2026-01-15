@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { LogIn, User, Lock, AlertCircle } from 'lucide-react';
+import { API_ENDPOINTS } from '../constants/config';
 
 const AdminLogin = () => {
     const [credentials, setCredentials] = useState({ username: '', password: '' });
@@ -22,7 +23,7 @@ const AdminLogin = () => {
         setError('');
 
         try {
-            const response = await fetch('https://portfolio-backend-c4o2.onrender.com/api/admin/login', {
+            const response = await fetch(API_ENDPOINTS.ADMIN_LOGIN, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(credentials)

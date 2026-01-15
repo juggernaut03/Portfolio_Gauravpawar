@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, Phone, Calendar, User, Users, MessageSquare, DollarSign, Search, Filter, Download, ArrowUpRight, Trash2, CheckCircle2 } from 'lucide-react';
+import { API_ENDPOINTS, API_BASE_URL } from '../constants/config';
 
 const LeadsPage = () => {
     const [leads, setLeads] = useState([]);
@@ -16,7 +17,7 @@ const LeadsPage = () => {
         setIsLoading(true);
         try {
             const token = localStorage.getItem('adminToken');
-            const response = await fetch('https://portfolio-backend-c4o2.onrender.com/api/contact', {
+            const response = await fetch(API_ENDPOINTS.CONTACT, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -40,7 +41,7 @@ const LeadsPage = () => {
 
         try {
             const token = localStorage.getItem('adminToken');
-            const response = await fetch(`https://portfolio-backend-c4o2.onrender.com/api/contact/${id}`, {
+            const response = await fetch(`${API_ENDPOINTS.CONTACT}/${id}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -62,7 +63,7 @@ const LeadsPage = () => {
         const newStatus = currentStatus === 'converted' ? 'new' : 'converted';
         try {
             const token = localStorage.getItem('adminToken');
-            const response = await fetch(`http://localhost:5001/api/contact/${id}/status`, {
+            const response = await fetch(`${API_ENDPOINTS.CONTACT}/${id}/status`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -186,8 +187,8 @@ const LeadsPage = () => {
                                         <td className="px-8 py-6">
                                             <div className="flex items-center gap-4">
                                                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center border transition-all duration-500 ${lead.status === 'converted'
-                                                        ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.1)]'
-                                                        : 'bg-white/5 border-white/10 text-white/40 group-hover:scale-110 transition-transform'
+                                                    ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.1)]'
+                                                    : 'bg-white/5 border-white/10 text-white/40 group-hover:scale-110 transition-transform'
                                                     }`}>
                                                     <User className="w-5 h-5" />
                                                 </div>
