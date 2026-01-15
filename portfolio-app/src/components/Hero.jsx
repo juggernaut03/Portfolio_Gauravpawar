@@ -2,6 +2,7 @@ import { motion, useInView, useScroll } from 'framer-motion';
 import { useRef, useState, useEffect } from 'react';
 import profileImage from '../assets/image_profile.png';
 import Footer from './Footer';
+import { API_ENDPOINTS } from '../constants/config';
 
 const Hero = ({ onNavigate }) => {
     const philosophyRef = useRef(null);
@@ -19,6 +20,9 @@ const Hero = ({ onNavigate }) => {
         email: '',
         message: ''
     });
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submitStatus, setSubmitStatus] = useState(null); // 'success' | 'error'
+    const [errorMessage, setErrorMessage] = useState('');
 
     const budgetOptions = ['1K-5K', '5K-10K', '10K-20K', 'MORE'];
 
@@ -29,9 +33,53 @@ const Hero = ({ onNavigate }) => {
         });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('Form submitted:', { ...formData, budget: selectedBudget });
+
+        if (!selectedBudget) {
+            setSubmitStatus('error');
+            setErrorMessage('Please select a budget');
+            return;
+        }
+
+        setIsSubmitting(true);
+        setSubmitStatus(null);
+        setErrorMessage('');
+
+        try {
+            const response = await fetch(API_ENDPOINTS.CONTACT, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    ...formData,
+                    budget: selectedBudget
+                }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                setSubmitStatus('success');
+                setFormData({
+                    name: '',
+                    phone: '',
+                    email: '',
+                    message: ''
+                });
+                setSelectedBudget(null);
+            } else {
+                setSubmitStatus('error');
+                setErrorMessage(data.error || 'Something went wrong. Please try again.');
+            }
+        } catch (error) {
+            console.error('Submission error:', error);
+            setSubmitStatus('error');
+            setErrorMessage('Could not connect to the server. Please try again later.');
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     const philosophyInView = useInView(philosophyRef, { once: true, margin: "-100px" });
@@ -550,30 +598,35 @@ const Hero = ({ onNavigate }) => {
                             id: 1,
                             number: "00-1",
                             title: "MOBILE APP DEVELOPMENT",
+                            description: "Building cross-platform mobile applications using Flutter and React Native for iOS & Android. From concept to App Store deployment, creating seamless user experiences.",
                             features: ["FLUTTER", "REACT NATIVE", "IOS & ANDROID", "APP STORE"]
                         },
                         {
                             id: 2,
                             number: "00-2",
                             title: "BACKEND SERVICES",
+                            description: "Developing robust server-side infrastructure with RESTful APIs, database design, cloud deployment, and enterprise-grade security to power your applications.",
                             features: ["API DEV", "DATABASE DESIGN", "CLOUD", "SECURITY"]
                         },
                         {
                             id: 3,
                             number: "00-3",
                             title: "SYSTEM ARCHITECTURE",
+                            description: "Designing scalable, well-designed technical foundations using microservices architecture, optimizing performance, and selecting the right tech stack for your needs.",
                             features: ["SCALABILITY", "MICROSERVICES", "PERFORMANCE", "TECH STACK"]
                         },
                         {
                             id: 4,
                             number: "00-4",
                             title: "PRODUCT DEVELOPMENT",
+                            description: "Transforming ideas into market-ready solutions with strategic planning, MVP development, rapid prototyping, and complete product lifecycle management.",
                             features: ["MVP DEV", "STRATEGY", "PROTOTYPING", "LIFECYCLE"]
                         },
                         {
                             id: 5,
                             number: "00-5",
                             title: "WEB DEVELOPMENT",
+                            description: "Creating modern, responsive web applications using React and Next.js with focus on performance, SEO optimization, and exceptional user experiences.",
                             features: ["REACT/NEXT.JS", "FRONTEND", "SEO", "RESPONSIVE"]
                         }
                     ].map((service) => (
@@ -621,6 +674,11 @@ const Hero = ({ onNavigate }) => {
                                             <h2 className="text-2xl md:text-3xl font-black mb-6 tracking-tight">
                                                 // {service.title}
                                             </h2>
+
+                                            {/* Service Description */}
+                                            <p className="text-sm font-mono leading-relaxed mb-6 text-black/70">
+                                                {service.description}
+                                            </p>
                                         </motion.div>
 
                                         {/* Features with Mask Animation */}
@@ -774,15 +832,36 @@ const Hero = ({ onNavigate }) => {
                         <div className="text-center py-12">
                             <motion.button
                                 type="submit"
+                                disabled={isSubmitting}
                                 whileHover={{ scale: 1.02 }}
                                 whileTap={{ scale: 0.98 }}
-                                className="inline-flex items-center gap-2 text-sm font-bold tracking-wider border-b-2 border-black pb-1 hover:opacity-60 transition-opacity"
+                                className={`inline-flex items-center gap-2 text-sm font-bold tracking-wider border-b-2 border-black pb-1 transition-opacity ${isSubmitting ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-60'}`}
                             >
-                                DISCUSS THE PROJECT
+                                {isSubmitting ? 'SENDING...' : 'DISCUSS THE PROJECT'}
                                 <svg className="w-4 h-4 -rotate-45" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                                 </svg>
                             </motion.button>
+
+                            {/* Status Messages */}
+                            {submitStatus === 'success' && (
+                                <motion.p
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="mt-4 text-green-600 font-mono text-sm"
+                                >
+                                    MESSAGE SENT SUCCESSFULLY! I'LL GET BACK TO YOU SOON.
+                                </motion.p>
+                            )}
+                            {submitStatus === 'error' && (
+                                <motion.p
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="mt-4 text-red-600 font-mono text-sm uppercase"
+                                >
+                                    {errorMessage}
+                                </motion.p>
+                            )}
                         </div>
                     </motion.form>
                 </div>
