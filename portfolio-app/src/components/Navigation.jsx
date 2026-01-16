@@ -46,6 +46,12 @@ const Navigation = ({ currentPage, onNavigate }) => {
                     >
                         [ SERVICES ]
                     </button>
+                    <button
+                        onClick={() => onNavigate('blog')}
+                        className="text-sm tracking-wider hover:opacity-60 transition-opacity text-white font-mono"
+                    >
+                        [ BLOG ]
+                    </button>
 
                 </motion.div>
 
@@ -104,6 +110,9 @@ const Navigation = ({ currentPage, onNavigate }) => {
                         </button>
                         <button onClick={() => { onNavigate('services'); setMenuOpen(false); }} className="block text-sm tracking-wider hover:opacity-60 transition-opacity text-white font-mono">
                             [ SERVICES ]
+                        </button>
+                        <button onClick={() => { onNavigate('blog'); setMenuOpen(false); }} className="block text-sm tracking-wider hover:opacity-60 transition-opacity text-white font-mono">
+                            [ BLOG ]
                         </button>
 
                     </div>

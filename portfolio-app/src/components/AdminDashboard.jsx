@@ -1,5 +1,5 @@
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Users, LogOut, Menu, X, Bell } from 'lucide-react';
+import { LayoutDashboard, Users, LogOut, Menu, X, Bell, FileText } from 'lucide-react';
 import { useState } from 'react';
 
 const AdminDashboard = () => {
@@ -9,7 +9,8 @@ const AdminDashboard = () => {
     const adminUser = localStorage.getItem('adminUser') || 'Admin';
 
     const menuItems = [
-        { icon: <Users className="w-5 h-5" />, label: 'Leads', path: '/admin/leads' }
+        { icon: <Users className="w-5 h-5" />, label: 'Leads', path: '/admin/leads' },
+        { icon: <FileText className="w-5 h-5" />, label: 'Blogs', path: '/admin/blogs' }
     ];
 
     const handleLogout = () => {
@@ -44,8 +45,8 @@ const AdminDashboard = () => {
                                 key={item.path}
                                 onClick={() => navigate(item.path)}
                                 className={`w-full flex items-center gap-4 px-5 py-4 rounded-2xl transition-all duration-300 ${location.pathname.startsWith(item.path)
-                                        ? 'bg-white text-black font-bold shadow-[0_0_20px_rgba(255,255,255,0.1)]'
-                                        : 'text-white/40 hover:text-white hover:bg-white/5'
+                                    ? 'bg-white text-black font-bold shadow-[0_0_20px_rgba(255,255,255,0.1)]'
+                                    : 'text-white/40 hover:text-white hover:bg-white/5'
                                     }`}
                             >
                                 {item.icon}

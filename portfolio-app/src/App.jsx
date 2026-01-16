@@ -7,9 +7,11 @@ import AboutPage from './components/AboutPage';
 import WorksPage from './components/WorksPage';
 import ServicesPage from './components/ServicesPage';
 import ContactPage from './components/ContactPage';
+import BlogsPage from './components/BlogsPage';
 import AdminLogin from './components/AdminLogin';
 import AdminDashboard from './components/AdminDashboard';
 import LeadsPage from './components/LeadsPage';
+import BlogsAdminPage from './components/BlogsAdminPage';
 
 const Portfolio = () => {
   const [currentPage, setCurrentPage] = useState('home');
@@ -84,6 +86,17 @@ const Portfolio = () => {
             <ContactPage />
           </motion.div>
         )}
+        {currentPage === 'blog' && (
+          <motion.div
+            key="blog"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.8, ease: customEase }}
+          >
+            <BlogsPage />
+          </motion.div>
+        )}
       </AnimatePresence>
     </>
   );
@@ -108,6 +121,7 @@ function App() {
       }>
         <Route index element={<Navigate to="/admin/leads" replace />} />
         <Route path="leads" element={<LeadsPage />} />
+        <Route path="blogs" element={<BlogsAdminPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
